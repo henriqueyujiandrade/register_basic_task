@@ -27,7 +27,7 @@ module.exports = async function handler(req, res) {
       )
     `;
 
-    const { rows: [task] } = await sql`
+    const [task] = await sql`
       INSERT INTO task (name, description)
       VALUES (${name.trim()}, ${description?.trim() || null})
       RETURNING id
