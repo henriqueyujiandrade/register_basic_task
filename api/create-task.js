@@ -1,12 +1,5 @@
 const { neon } = require('@neondatabase/serverless');
 
-let sql;
-try {
-  sql = neon(process.env.POSTGRES_URL);
-} catch (err) {
-  console.error('[create-task] falha conectando ao banco:', err.message);
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -17,6 +10,12 @@ module.exports = async function handler(req, res) {
   if (!name || !name.trim()) {
     return res.status(400).json({ error: 'Nome é obrigatório' });
   }
+
+  if (!process.env.POSTGRES_URL) {
+    return res.status(500).json({ error: 'POSTGRES_URL não configurado' });
+  }
+
+  const sql = neon(process.env.POSTGRES_URL);
 
   try {
     await sql`
